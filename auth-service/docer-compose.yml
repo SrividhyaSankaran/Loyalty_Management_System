@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+
+  postgres:
+    image: postgres:15
+    container_name: loyalty-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db-init:/docker-entrypoint-initdb.d
+    networks:
+    - lms-network
+
+  redis:
+    image: redis:7
+    container_name: loyalty-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+    - lms-network
+
+  auth-service:
+    build:
+      context: ./auth-service
+    container_name: auth-service
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - JWT_SECRET=mysupersecurejwtsecretkeyforlms2026project
+    networks:
+      - lms-network
+
+networks:
+  lms-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
