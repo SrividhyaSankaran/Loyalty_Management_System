@@ -15,7 +15,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./db-init:/docker-entrypoint-initdb.d
     networks:
-    - lms-network
+    - flight-network
 
   redis:
     image: redis:7
@@ -24,7 +24,7 @@ services:
     ports:
       - "6379:6379"
     networks:
-    - lms-network
+    - flight-network
 
   auth-service:
     build:
@@ -34,9 +34,9 @@ services:
       - postgres
       - redis
     environment:
-      - JWT_SECRET=mysupersecurejwtsecretkeyforlms2026project
+      - JWT_SECRET=mysupersecurejwtsecretkeyforflight2026project
     networks:
-      - lms-network
+      - flight-network
 
   api-gateway:
     build:
@@ -45,15 +45,15 @@ services:
     ports:
       - "8081:8081"
     environment:
-      - JWT_SECRET=mysupersecurejwtsecretkeyforlms2026project
+      - JWT_SECRET=mysupersecurejwtsecretkeyforflight2026project
     depends_on:
       - auth-service
       - redis
     networks:
-      - lms-network
+      - flight-network
 
 networks:
-  lms-network:
+  flight-network:
     driver: bridge
 
 volumes:
